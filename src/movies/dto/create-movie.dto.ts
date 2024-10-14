@@ -1,6 +1,10 @@
+import { PickType } from '@nestjs/mapped-types';
+import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class CreateMovieDto {
+import { Movie } from '../entity/movie.entity';
+
+export class CreateMovieDto extends PickType(Movie, ['title', 'year', 'genres'] as const) {
   @IsString()
   readonly title: string;
 
@@ -9,5 +13,6 @@ export class CreateMovieDto {
 
   @IsOptional()
   @IsString({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value.join(',') : value)) // Convert array to string
   readonly genres: string[];
 }

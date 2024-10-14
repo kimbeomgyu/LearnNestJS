@@ -2,16 +2,16 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { Movie } from './entities/movie.entity';
-import { MoviesService } from './movies.service';
+import { Movie } from './entity/movie.entity';
+import { MoviesService } from './services/movies.service';
 
 @Controller('movies')
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
   @Get()
-  getAll(): Movie[] {
-    return this.moviesService.getAll();
+  browsingMovies(): Promise<Movie[]> {
+    return this.moviesService.browsingMovies();
   }
 
   @Get('search')
@@ -20,19 +20,19 @@ export class MoviesController {
   }
 
   @Get(':id')
-  getOne(@Param('id') movieId: number): Movie {
+  getOne(@Param('id') movieId: number): Promise<Movie | null> {
     console.log(typeof movieId);
-    return this.moviesService.getOne(movieId);
+    return this.moviesService.findOne(movieId);
   }
 
   @Post()
   create(@Body() movieData: CreateMovieDto) {
-    return this.moviesService.create(movieData);
+    return this.moviesService.add(movieData);
   }
 
   @Delete(':id')
   delete(@Param('id') movieId: number) {
-    return this.moviesService.deleteOne(movieId);
+    return this.moviesService.deleteById(movieId);
   }
 
   @Patch(':id')
