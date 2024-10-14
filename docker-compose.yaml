@@ -1,0 +1,43 @@
+services:
+  # Nodejs api
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deploy
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./src:/app/src
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MARIADB_DATABASE=database
+      - MARIADB_USER=admin
+      - MARIADB_PASSWORD=admin-password
+      - MARIADB_HOST=db
+      - MARIADB_PORT=3306
+    depends_on:
+      - db
+
+  # Database mariadb
+  db:
+    image: mariadb:11.3.2
+    environment:
+      TZ: 'Asia/Seoul'
+      ALLOW_EMPTY_PASSWORD: no
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_USER: admin
+      MARIADB_DATABASE: database
+      MARIADB_PASSWORD: admin-password
+    ports:
+      - '3306:3306'
+    restart: always
+    volumes:
+      - ./data:/var/lib/mysql
+
+  # Redis
+  redis:
+    image: redis:5.0
+    ports:
+      - '6379:6379'
